@@ -6,10 +6,10 @@
 
 # SHARE-seq-alignmentV2
 Pipeline for demultiplexing and aligning both ATAC and RNA data generated in SHARE-seqV2\
-**Author: Sai Ma. sai@broadinstitute.org**
+**Author: Sai Ma. masai.zju@gmail.com**
 
 # Important note
-The ATAC and RNA barcodes would in the format of R1.xx,R2.xx,R3.xx,P1.xx, where xx is in the range of 01-96.\
+The ATAC and RNA barcodes would in the format of R1.xxx,R2.xxx,R3.xxx,P1.yy, where xxx is in the range of 01-192, yy is in the range of 01-96.\
 The P1.xx indicates the primers that were used to amplify each ATAC and RNA sub-libraries. It is expected to be different between RNA and ATAC assay. The rest part of barcode (R1.xx,R2.xx,R3.xx) would be the same for ATAC and RNA library.\
 Depending on the downstream analysis pipeline, sometimes the comma in the barcode would be converted to period (R1.xx,R2.xx,R3.xx,P1.xx --> R1.xx.R2.xx.R3.xx.P1.xx).\
 A barcode translation table indicating the P1.xx used in the assay would be beneficial, when submitting data to GEO.
