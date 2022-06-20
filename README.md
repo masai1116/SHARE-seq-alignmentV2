@@ -62,9 +62,8 @@ The pipeline also offers flexible RNA-seq specific options for advanced users.
 1) removeSingelReadUMI=F # T or F; default is F. If T, UMIs with single read will be removed.
 2) keepIntron=T # T or F; default is T. If F, intronic RNA reads will be discarded.
 3) cores=16
-genename=gene_name # default gene_name; gene_name (official gene symbol) or gene_id (ensemble gene name)
-refgene=gencode # default gencode; gencode or genes; genes is UCSC genes; gencode also annotate ncRNA
-mode=fast # fast or regular; default fast; fast: dedup with custom  script; regular: dedup with umitools
+4) genename=gene_name # default gene_name; gene_name (official gene symbol) or gene_id (ensemble gene name)
+5) mode=fast # fast or regular; default fast; fast: dedup with custom  script; regular: dedup with umitools
 fast mode gives more UMIs because taking genome position into account when dedup. It doesn't collapse UMIs map to different position. The lib size estimation is not accurate.
 
 # Sample barcode table
