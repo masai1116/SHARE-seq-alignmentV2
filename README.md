@@ -27,7 +27,7 @@ After downloading all scripts, update the general configuration section in main 
 3) picardPATH # where picard is installed e.g. picardPATH='/mnt/bin/picard/picard.jar'
 
 The pipeline also requres gtf files and aligner index files to be download and unziped into the right location.\
-GTF files can be downloaded [here](https://drive.google.com/file/d/1HuGLf0vSHO58Ek5HibTRiwXWBn9fBMTz/view?usp=sharing).\
+GTF files can be downloaded [here](https://drive.google.com/file/d/1j4MOLRz4033EEyj2Oo_CG0FcZQDoBYwQ/view?usp=sharing).\
 Bowtie2 index files (Hg19 and mm10) can be downloaded [here](https://drive.google.com/file/d/1bXIxznwirsZ6DZhqK1gw6ZKlj-UjFRhn/view?usp=sharing).\
 Assuming SHARE-seq aligment scripts are installed to "/home/SHARE-seq-alignment/", the gtf files should be placed in the "/home/SHARE-seq-alignment/gtf/" folder.\
 Reference genome files can be downloaded [here](https://drive.google.com/file/d/1PW5FD9GfhEOl5kQgAFxZSF57kcXtlrJG/view?usp=sharing).\
@@ -69,6 +69,9 @@ The pipeline also offers flexible RNA-seq specific options for advanced users.
 5) mode=fast # fast or regular; default fast; fast: dedup with custom  script; regular: dedup with umitools
 fast mode gives more UMIs because taking genome position into account when dedup. It doesn't collapse UMIs map to different position. The lib size estimation is not accurate.
 
+## Other option
+cleanup=T # this will remove intermediate fastqs and save disk space. When using the pipeline the first time, set it to F could help troubleshoot.
+
 # Sample barcode table
 SHARE-seq allows mutiplexing samples in one run. We use ymal file to store PCR barcode information (P1.xx, refers to the Ad1.xx primers used in the PCR step). See ```config_example.yaml``` as an example. This file needs to be updated for each sample and each sequencing run. When multiple sublibraries are sequenced at the same time, simply add addtional P1.xx to the yaml file. (e.g. P1.13)
 ```
@@ -97,7 +100,7 @@ This pipeline currently keeps many intermedia files. If preferred, they can be m
 
 # Read data example
 Public SHARE-seq datasets are available at [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE140203).\
-A set of fastq files for human bone marrow cells experiment can be downloaded [here](https://drive.google.com/drive/folders/19HdjJuWrpRJz8OeB6YNUMSojPyTMV7OP?usp=sharing).
+A set of fastq files for human bone marrow cells experiment can be downloaded [here](https://drive.google.com/drive/folders/1d0gfb7qrBL76MMh0JPRX3z9-1Wqxt0vd?usp=sharing).
 
 # Cite us
 For more details, please refer to [Ma et al. Chromatin Potential Identified by Shared Single-Cell Profiling of RNA and Chromatin, Cell 2020](https://www.sciencedirect.com/science/article/pii/S0092867420312538)
