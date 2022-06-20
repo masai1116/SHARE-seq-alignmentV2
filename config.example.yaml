@@ -1,0 +1,10 @@
+Project1:
+  Name: BMMC.RNA
+  Primer:
+  - P1.12
+  Type: RNA
+Project2:
+  Name: BMMC.ATAC
+  Primer:
+  - P1.04
+  Type: ATAC
