@@ -18,7 +18,7 @@ Type=(RNA ATAC)
 # ATAC RNA notrim (keep all information, in case of any spatial design)
 # fill the same information in yaml file
 
-Genomes=(hg38 hg38)
+Genomes=(hg19 hg19)
 # both (hg19+mm10) mm10 hg19 hg38 noalign (skip alignment)
 ReadsPerBarcode=(10 10)
 # reads cutoff to barcodes: 100 for full run; 10 for QC run
