@@ -29,7 +29,9 @@ The pipeline also requres gtf files and aligner index files to be download and u
 GTF files can be downloaded [here](https://drive.google.com/file/d/1HuGLf0vSHO58Ek5HibTRiwXWBn9fBMTz/view?usp=sharing).\
 Bowtie2 index files (Hg19 and mm10) can be downloaded [here](https://drive.google.com/file/d/1bXIxznwirsZ6DZhqK1gw6ZKlj-UjFRhn/view?usp=sharing).\
 Assuming SHARE-seq aligment scripts are installed to "/home/SHARE-seq-alignment/", the gtf files should be placed in the "/home/SHARE-seq-alignment/gtf/" folder.\
-The bowtie2 index files should be placed in the "/home/SHARE-seq-alignment/refGenome/bowtie2/" folder.\
+Reference genome files can be downloaded [here](https://drive.google.com/file/d/1PW5FD9GfhEOl5kQgAFxZSF57kcXtlrJG/view?usp=sharing).\
+Assuming SHARE-seq aligment scripts are installed to "/home/SHARE-seq-alignment/", the reference genome files should be placed in the "/home/SHARE-seq-alignment/refGenome/" folder.\
+If user prefer to use their own genome build, the bowtie2 index files should be placed in the "/home/SHARE-seq-alignment/refGenome/bowtie2/" folder.\
 Four sets of index files (hg38, hg19, mm10 and hg19-mm10 combined genome) for star aligner should be prepared according to star aligner [manual](https://github.com/alexdobin/STAR), or downloded from here: [hg19](https://drive.google.com/file/d/1IXI4DP-mjh2qc-EQe1WnWJQOCVEI4KVX/view?usp=sharing), [mm10](https://drive.google.com/file/d/1n0UwzOeUbX7TIBOrcBbXjgH3i0UH-Ka5/view?usp=sharing), [combined genome](https://drive.google.com/file/d/15Z2YMUDiavYG0s9zLFAbbwqA0VhVNu-f/view?usp=sharing).\
 The unziped index files should be placed in the "/home/SHARE-seq-alignment/refGenome/star/hg38", "/home/SHARE-seq-alignment/refGenome/star/hg19", "/home/SHARE-seq-alignment/refGenome/star/mm10", and "/home/SHARE-seq-alignment/refGenome/star/both", respectively.\
 The index file for hg19-mm10 combined genome can be downloaded from [10x Genomics website](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest).
