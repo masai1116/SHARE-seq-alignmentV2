@@ -5,7 +5,8 @@
 </html>
 
 # SHARE-seq-alignmentV2
-Pipeline for demultiplexing and aligning both ATAC and RNA data generated in SHARE-seqV2\
+Pipeline for demultiplexing and aligning both ATAC and RNA data generated in SHARE-seqV2.\
+The V2 pipeline is much faster than previous version and less demanding. The fastq and output files are reformated.\
 **Author: Sai Ma. masai.zju@gmail.com**
 
 # Important note
