@@ -89,8 +89,8 @@ The detialed information about these barcode can be found in [SHARE-seq manuscri
 # Pipeline output
 After successfully running the pipeline, data for each project will be kept in the folder with the same name as the project. 
 Several QC plots will be generated.\
-For ATAC, the most important files are the fragment file after removing duplicates and mito reads (.rmdup.cutoff.bed.gz) and a summarize report (.counts.csv.gz).\
-For RNA, the most important files are UMIxCell matrix (.UMIcounts.csv.gz) and a summarize report (.counts.csv.gz).\
+For ATAC, the most important files are the fragment file after removing duplicates, mito reads and shifting Tn5 cutting position (.fragments.tsv.gz) and a summarize report (.counts.csv.gz).\
+For RNA, the most important files are UMIxCell matrix (.gene.bc.matrices.h5) and a summarize report (.counts.csv.gz).\
 This pipeline currently keeps many intermedia files. If preferred, they can be manually removed afterwards.
 
 # Read data example
