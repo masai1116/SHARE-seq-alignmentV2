@@ -10,19 +10,19 @@ Pipeline for demultiplexing and aligning both ATAC and RNA data generated in SHA
 
 # Important note
 The ATAC and RNA barcodes would in the format of R1.xxx,R2.xxx,R3.xxx,P1.yy, where xxx is in the range of 01-192, yy is in the range of 01-96.\
-The P1.xx indicates the primers that were used to amplify each ATAC and RNA sub-libraries. It is expected to be different between RNA and ATAC assay. The rest part of barcode (R1.xx,R2.xx,R3.xx) would be the same for ATAC and RNA library.\
-Depending on the downstream analysis pipeline, sometimes the comma in the barcode would be converted to period (R1.xx,R2.xx,R3.xx,P1.xx --> R1.xx.R2.xx.R3.xx.P1.xx).\
+The P1.xx indicates the primers that were used to amplify each ATAC and RNA sub-libraries. It is expected to be different between RNA and ATAC assay. The rest part of barcode (R1.xxx,R2.xxx,R3.xxx) would be the same for ATAC and RNA library.\
+Depending on the downstream analysis pipeline, sometimes the comma in the barcode would be converted to period (R1.xxx,R2.xxx,R3.xxx,P1.yy --> R1.xxx.R2.xxx.R3.xxx.P1.yy).\
 A barcode translation table indicating the P1.xx used in the assay would be beneficial, when submitting data to GEO.
 
 # Installation
-This pipeline requires following packages to be properly installed and added to system path: GNU parallel, Bcl2fastq, fastp, zcat, STAR, bowtie2, python2, umi_tools, samtools, picard (2.14.1, newer version may result in error), R, featureCounts, read_distribution.py from RSeQC, bedtools
+This pipeline requires following packages to be properly installed and added to system path: GNU parallel, Bcl2fastq, fastp, zcat, STAR, bowtie2, python3, umi_tools, samtools, picard (2.14.1, newer version may result in error), R, featureCounts, read_distribution.py from RSeQC, bedtools. 
 
 The SHARE-seq-alignment scripts can be directly downloaded from the github website.\
 [https://github.com/masai1116/SHARE-seq-alignment/](https://github.com/masai1116/SHARE-seq-alignment/)
 
 After downloading all scripts, update the general configuration section in main script "Split_seq_example.sh":
 1) myPATH # where the SHARE-seq scripts are installed. e.g. myPATH='/mnt/users/Script/share-seq-github-v1/'
-2) pythohPATH # where python2 is installed e.g. pythohPATH='/usr/bin/python' 
+2) pythohPATH # where python3 is installed e.g. pythohPATH='/usr/bin/python' 
 3) picardPATH # where picard is installed e.g. picardPATH='/mnt/bin/picard/picard.jar'
 
 The pipeline also requres gtf files and aligner index files to be download and unziped into the right location.\
