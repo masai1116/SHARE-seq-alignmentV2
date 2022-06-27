@@ -49,7 +49,7 @@ A) paths B) sample configuration C) fastq configuration. After update all specif
 ## B) sample configuration
 1) Project=(BMMC.RNA BMMC.ATAC) # use differnt name for each sample 
 2) Type=(RNA ATAC)  # ATAC or RNA
-3) Genomes=(hg38 hg39) # both mm10 hg19 hg38 \
+3) Genomes=(hg38 hg38) # both mm10 hg19 hg38 \
 RawReadsPerBarcode and ReadsPerBarcode options are designed to remove barcodes with too few reads and speed up processing. 
 4) ReadsPerBarcode=(10 10) # reads cutoff to barcodes: 100 for full run; 10 for QC run
 5) keepMultiMapping=(F F)  # default F; F for species mixing or cell lines, T for low yield tissues (only keep the primarily aligned reads), doesn't matter for ATAC. Allowing multi-mapping redas will increase the percent of mito reads
