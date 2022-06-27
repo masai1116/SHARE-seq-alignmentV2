@@ -75,7 +75,7 @@ if [ ! -d $dir ]; then mkdir $dir; fi
 if [ ! -d $dir/fastqs ]; then mkdir $dir/fastqs ; fi
 if [ ! -d $dir/temp ]; then mkdir $dir/temp ; fi
 
-cp $myPATH/Split*.sh $dir/
+cp $myPATH/Share*.sh $dir/
 cp $yaml $dir/
 cd $dir 
 if [ -f $dir/Run.log ]; then rm $dir/Run.log; fi
