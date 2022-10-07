@@ -16,12 +16,12 @@ FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:
 cat SRR19912835_1.fastq | awk '{if(NR%4==1) print "@"$2; else if(NR%4==2) print; else if(NR%4==3) print "+"; else if(NR%4==3) print $0}' | bgzip > speciesmix.ATAC.R1.fastq.gz\
 cat SRR19912835_2.fastq | awk '{if(NR%4==1) print "@"$2; else if(NR%4==2) print; else if(NR%4==3) print "+"; else if(NR%4==3) print $0}' | bgzip > speciesmix.ATAC.R2.fastq.gz
 
-3. Move the resulting fastq.gz files into a new directoy (/fakepath/fastqfoler/). \
+3. Move the resulting fastq.gz files into a new directoy (/fakepath/fastqfoler/).
 
 4. Update the rawdir and Project in Share_seqV2_example.sh accordingly:\
 rawdir=/fakepath/fastqfoler/ \
 Project=(speciesmix.ATAC) \
-Start=Demultiplexed # this optine makes the pipepline awares the starting file is the demultiplex fastqs.\
+Start=Demultiplexed # this optine makes the pipepline awares the starting file is the demultiplex fastqs.
 
 5. Update the project name in config.example.yaml. 
 6. Run the Share_seqV2_example.sh
