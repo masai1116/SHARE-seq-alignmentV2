@@ -17,7 +17,7 @@ cat SRR19912835_1.fastq | awk '{if(NR%4==1) print "@"$2; else if(NR%4==2) print;
 cat SRR19912835_2.fastq | awk '{if(NR%4==1) print "@"$2; else if(NR%4==2) print; else if(NR%4==3) print "+"; else if(NR%4==3) print $0}' | bgzip > speciesmix.ATAC.R2.fastq.gz
 
 The new read looks like:\
-zless speciesmix.ATAC.R1.fastq.gz | head -4
+zless speciesmix.ATAC.R1.fastq.gz | head -4\
 @A01389:111:H2Y5KDMXY:1:1101:1127:1000_R1.003,R2.032,R3.081,P1.06\
 GGGCTACACAGAGAAACCCTGTCTCGAAAAACAAACAAAACAAAACAAAA\
 +\
