@@ -1,13 +1,19 @@
 #!/bin/bash
-# Author: Sai Ma <sai@broadinstitute.org>
-# Last modified date: 2021/05/25
-# Designed for processing share-atac/rna/taps/dipC/cite/cellhashing/crop
+# Author: Sai Ma <sai.ma2@mssm.edu>
+# Last modified date: 2022/10/07
+# Designed for processing share-V2
 
 # input file
 # 1) yaml
-# 2) BCL or fastq
-# when there are 4 fastqs per lane, fastqs need to be named as "*S1_L001/2/3/4_R1/R2/I1/I2_001.fastq.gz" (when there are multiple lanes) or "_S1_R1/R2/I1/I2_001.fastq.gz" (when there is one lane), R1: bio read1, R2: bio read2, I1: index1, I2: index2
-# when there are 2 fastqs per lane, fastqs need to be named as "*S1_L001/2/3/4_R1/2_001.fastq.gz" or "_S1_R1/2_001.fastq.gz". important to rename files as R1 and "R4"
+# 2) BCL or fastq or demultiplexed fastqs
+# when there are 4 fastqs per lane, fastqs need to be named as "*S1_L001/2/3/4_R1/R2/I1/I2_001.fastq.gz" or "_S1_R1/R2/I1/I2_001.fastq.gz", R1: bio read1, R2: bio read2, I1: index1, I2: index2
+# when there are 2 fastqs per lane, fastqs need to be named as "*S1_L001/2/3/4_R1/2_001.fastq.gz" or "_S1_R1/2_001.fastq.gz". important to rename files as R1 and "R2"
+# if using demultiplexed fastq, makes sure use $project.$Type.R1/R2.fastq.gz as file name. The project and Type should match exactly the ones list in this scipt
+
+#rawdir=/mnt/users/sai/Data/20220830_peizhe_share_trial1/raw/220815_NB502063_0508_AHVGKKAFX3/
+#dir=/mnt/users/sai/Data/20220830_peizhe_share_trial1/aligned/
+#yaml=/mnt/users/sai/Script/Split-seq_Sai/config.peizhe.sh
+#Project=(sample1 sample2)
 
 rawdir=/mnt/users/sai/Script/Split-seq_Sai/example_fastq/
 dir=/mnt/users/sai/Script/Split-seq_Sai/example_output/
@@ -16,14 +22,15 @@ Project=(BMMC.RNA BMMC.ATAC)
 
 Type=(RNA ATAC)
 # ATAC RNA notrim (keep all information, in case of any spatial design)
-# fill the same information in yaml file
 
-Genomes=(hg19 hg19)
-# both (hg19+mm10) mm10 hg19 hg38 noalign (skip alignment)
-ReadsPerBarcode=(10 10)
-# reads cutoff to barcodes: 100 for full run; 10 for QC run
+Genomes=(hg38 hg38)
+# both mm10 hg19 guide hg38 noalign (skip alignment)  (hg38 only supports ATAC and RNA, and gencode annotation)
+ReadsPerBarcode=(10 10 100 100 100 100 100 100 100 100 100 100 100 100 100)
 
-Start=Fastq # Bcl or Fastq
+# reads cutoff for the filtered bam/bed: 100 for full run; 10 for QC run; 1 for crop
+
+Start=Demultiplexed # Bcl, Fastq, or Demultiplexed
+Start=Fastq
 Runtype=QC # QC or full,  QC only analyze 12M reads
 chem=fwd # rev or fwd: nova 1.5 & nextseq use rev; nova1.0 uses fwd
 
@@ -32,29 +39,41 @@ chem=fwd # rev or fwd: nova 1.5 & nextseq use rev; nova1.0 uses fwd
 removeSingelReadUMI=F # default F; T if seq deep enough or slant is a big concern; def use F for crop-seq
 keepIntron=T #default T
 cores=16
-genename=gene_name # default gene_name; gene_name (official gene symbol) or gene_id (ensemble gene name)
+genename=gene_name # defaultgene_name; gene_name (official gene symbol) or gene_id (ensemble gene name)
 refgene=gencode # default gencode; gencode or genes; genes is UCSC genes; gencode also annotate ncRNA
-mode=fast # fast or regular; default fast; fast: dedup with custom  script; regular: dedup with umitools
+mode=fast # fast or regular; default regular; fast: dedup with my own script; regular: dedup with umitools
 # fast mode gives more UMIs because taking genome position into account when dedup
-# fast mode doesn't collapse UMIs map to different position
-# in fast mode, the lib size estimation is not accurate
+# fast mode doesn't collapse UMIs map to different position, the dup rate for RNA is not accurate
 
 keepMultiMapping=(T T T T T T T T T T T T T T T T)
 # default F; F for species mixing or cell lines, T for low yield tissues (only keep the primarily aligned reads), doesn't matter for ATAC
 # allowing multi-mapping redas will increase the percent of mito reads
 
-keepmito=(F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F)
+N6=(F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F) # default F, T is random primer is used; N6 is not comptiable with regular mode and removeSingelReadUMI mode
+
+## DNA options
+oneread=(F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F \
+	   F F F F F F F F F F F F F F F F F F F F F F F \
+	   F F F F F F F F F F F F F F F F F F F F F F F)
+# option F, R2, Sh
+# default F
+# R2: when the ATAC/cuttag lib is double tagged, only read2 is used for lib size calculation
+# Sh: select shortest fragment using both R1 and R2
+keepmito=(F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F F \
+       F F F F F F F F F F F F F F F F F F F F F F F \
+       F F F F F F F F F F F F F F F F F F F F F F F \
+       F F F F F F F F F F F F F F F F F F F F F F F)
 ## default F, remove mito reads
 
 cleanup=F
 # clean up fastq or not
 
-#### do not change following
+################### DO NOT CHANGE BELOW ####################
 
 # define path
 toolPATH='/mnt/Apps/JDB_tools/'
 myPATH='/mnt/users/sai/Script/Split-seq_Sai/'
-tssFilesPATH='/mnt/users/sai/Script/Split-seq_Sai/TSSfiles/' 
+tssFilesPATH='/mnt/users/sai/Script/Split-seq_Sai/TSSfiles/' # cleaned TSSs on unknown chr for mm10
 picardPATH='/mnt/bin/picard/picard.jar'
 bowtieGenome='/mnt/users/sai/Script/Split-seq_Sai/refGenome/bowtie2/'
 starGenome='/mnt/users/sai/Data/star/genome/'
@@ -67,6 +86,7 @@ export SHELL=$(type -p bash)
 source ~/.bashrc
 export LC_COLLATE=C
 export LANG=C
+## this may speed up sorting by limit output to bytes 
 
 echo "the number of projects is" ${#Project[@]}
 echo "Running $Runtype pipeline"
@@ -75,7 +95,7 @@ if [ ! -d $dir ]; then mkdir $dir; fi
 if [ ! -d $dir/fastqs ]; then mkdir $dir/fastqs ; fi
 if [ ! -d $dir/temp ]; then mkdir $dir/temp ; fi
 
-cp $myPATH/Share*.sh $dir/
+cp $myPATH/Split*.sh $dir/
 cp $yaml $dir/
 cd $dir 
 if [ -f $dir/Run.log ]; then rm $dir/Run.log; fi
@@ -83,6 +103,7 @@ if [ -f $dir/Run.log ]; then rm $dir/Run.log; fi
 export PATH="/mnt/users/sai/miniconda2/bin:$PATH"
 
 # check yaml file, make sure no duplicated P1.xx
+
 p1=$(cat $yaml | grep P1. | sort | uniq -d)
 if [ -z "$p1" ]; then
     # empty
@@ -109,6 +130,20 @@ if [ "$Start" = Bcl ]; then
     Start=Fastq
 fi
 
+if [ "$Start" = Demultiplexed ]; then
+    mkdir $dir/fastqs/
+    noProj=${#Project[@]}
+    echo "link fastqs"
+    for (( i=0; i< $noProj; i++ )); do
+	if [ -f $rawdir/${Project[$i]}.R1.fastq.gz  ]; then 
+	    echo "link" ${Project[$i]} fastqs
+	    ln -s $rawdir/${Project[$i]}.R1.fastq.gz $dir/fastqs/${Project[$i]}.R1.fastq.gz
+	    ln -s $rawdir/${Project[$i]}.R2.fastq.gz $dir/fastqs/${Project[$i]}.R2.fastq.gz
+	else
+	    echo "Error...couldn't find" ${Project[$i]}.R1.fastq.gz
+	fi
+    done
+fi
 
 if [ "$Start" = Fastq ]; then
     echo "Skip bcltofastq"
@@ -192,24 +227,24 @@ if [ "$Start" = Fastq ]; then
     ls $dir/smallfastqs | grep I1 > $dir/filesi1.xls
     ls $dir/smallfastqs | grep I2 > $dir/filesi2.xls
     cd $dir/
-    if [ -f $dir/fastqs/Sub.0001.1.discard.R1.fq.gz ]; then
-        echo "Found Sub.0001.1.discard.R1.fq.gz, skip updating index"
+    if [ -f $dir/fastqs/Sub.0001.1.$Project.R1.fq.gz ]; then
+        echo "Found Sub.0001.1.$Project.R1.fq.gz, skip updating index"
     else
         echo "Update index and trim fastqs"
 	noreadfile=`ls $dir/smallfastqs | grep R1 2>/dev/null | wc -l`
 	noindexfile=`ls $dir/smallfastqs | grep I1 2>/dev/null | wc -l`
 	if [ $noreadfile == $noindexfile ]; then
 	    paste filesr1.xls filesr2.xls filesi1.xls filesi2.xls | awk -v OFS='\t' '{print $1, $2, $3, $4, substr($1,1,7)}'> Filelist2.xls
-	    parallel --jobs $cores --colsep '\t' 'if [ -f '$dir'/fastqs/Sub.{5}.discard.R1.fq.gz ]; then echo "found Sub.{5}.discard.R1.fq.gz"; \
-	    	     	    	   	  else python3 '$myPATH'/fastq.process.py3.v0.8.py \
+	    parallel --jobs $cores --colsep '\t' 'if [ -f '$dir'/fastqs/Sub.{5}.'$Project'.R1.fq.gz ]; then echo "found Sub.{5}.'$Project'.R1.fq.gz"; \
+	    	     	    	   	  else python3 '$myPATH'/fastq.process.py3.v0.9.py \
                                           -a '$dir'/smallfastqs/{1} -b '$dir'/smallfastqs/{2} \
                                           --c '$dir'/smallfastqs/{3} --d '$dir'/smallfastqs/{4} \
 					  --out '$dir'/fastqs/Sub.{5} \
 					  -t '$chem' -y '$yaml' && pigz --fast -p 4 '$dir'/fastqs/Sub.{5}*fq; fi' :::: Filelist2.xls
 	else
 	    paste filesr1.xls filesr2.xls | awk -v OFS='\t' '{print $1, $2, substr($1,1,7)}'> Filelist2.xls
-	    parallel --jobs $cores --colsep '\t' 'if [ -f '$dir'/fastqs/Sub.{3}.discard.R1.fq.gz ]; then echo "found Sub.{3}.discard.R1.fq.gz"; \ 
-	    	     	    	   	  else python3 '$myPATH'/fastq.process.py3.v0.8.py -a '$dir'/smallfastqs/{1} -b '$dir'/smallfastqs/{2} \
+	    parallel --jobs $cores --colsep '\t' 'if [ -f '$dir'/fastqs/Sub.{3}.'$Project'.R1.fq.gz ]; then echo "found Sub.{3}.'$Project'.R1.fq.gz"; \ 
+	    	     	    	   	  else python3 '$myPATH'/fastq.process.py3.v0.9.py -a '$dir'/smallfastqs/{1} -b '$dir'/smallfastqs/{2} \
                                           --out '$dir'/fastqs/Sub.{3} \
 					  -t '$chem' -y '$yaml' && pigz --fast -p 4 '$dir'/fastqs/Sub.{3}*fq; fi' :::: Filelist2.xls
 	    # --qc # option is available to process even smaller number of reads
@@ -224,20 +259,16 @@ fi
 # merge fastq
 echo "Merge fastqs"
 parallel --jobs 4 'if [ -f '$dir'/fastqs/{}.R1.fastq.gz ] || [ -d '$dir'/{} ]; then echo "found {}.R1.fastq.gz or {} folder"; \
-	 	      	   else ls '$dir'/fastqs/Sub*{}*R1.fq.gz | xargs cat > '$dir'/fastqs/{}.R1.fastq.gz && echo "Generated {}.R1.fastq.gz"; fi' ::: ${Project[@]} discard 
+	 	      	   else ls '$dir'/fastqs/Sub*{}*R1.fq.gz | xargs cat > '$dir'/fastqs/{}.R1.fastq.gz && echo "Generated {}.R1.fastq.gz"; fi' ::: ${Project[@]}  
 parallel --jobs 4 'if [ -f '$dir'/fastqs/{}.R2.fastq.gz ] || [ -d '$dir'/{} ]; then echo "found {}.R2.fastq.gz or {} folder"; \
-                           else ls '$dir'/fastqs/Sub*{}*R2.fq.gz | xargs cat > '$dir'/fastqs/{}.R2.fastq.gz && echo "Generated {}.R2.fastq.gz"; fi' ::: ${Project[@]} discard
+                           else ls '$dir'/fastqs/Sub*{}*R2.fq.gz | xargs cat > '$dir'/fastqs/{}.R2.fastq.gz && echo "Generated {}.R2.fastq.gz"; fi' ::: ${Project[@]} 
 
 ## clean up small fastqs
 if [ $cleanup == "T" ]; then
     rm -r $dir/smallfastqs/* $dir/*/Sub.*.fq.gz
     touch $dir/smallfastqs/0001.1.$Run.R2.fastq.gz
-    touch $dir/fastqs/Sub.0001.1.discard.R1.fq.gz
-    rm $dir/fastqs/discard.R1.fastq.gz
-    rm $dir/fastqs/discard.R2.fastq.gz
-    touch $dir/fastqs/discard.R1.fastq.gz
-    touch $dir/fastqs/discard.R2.fastq.gz
 fi
+
 
 # align
 index=0
@@ -302,9 +333,18 @@ for Name in ${Project[@]}; do
 			     --limitIObufferSize 400000000 \
 			     --outReadsUnmapped None \
 			     --readFilesCommand zcat
-			    
-			mv $dir/fastqs/$Name.$Species.Aligned.out.bam $dir/fastqs/$Name.$Species.bam
-			rm -r *_STARtmp *Log.progress.out *SJ.out.tab
+
+			if [ ${N6[$index]} == "F" ]; then
+			    mv $dir/fastqs/$Name.$Species.Aligned.out.bam $dir/fastqs/$Name.$Species.bam
+			else
+			    echo "Add PT tag to label N6"
+			    samtools view -H $dir/fastqs/$Name.$Species.Aligned.out.bam > $dir/fastqs/$Name.$Species.header.sam
+			    ## add PT =1 tag to dT reads; PT = 0 to N6 reads
+			    cat $dir/fastqs/$Name.$Species.header.sam <(samtools view -@ $cores $dir/fastqs/$Name.$Species.Aligned.out.bam | \
+				awk -v OFS='\t' '{if ($1 ~ /NNNNNNNNNN/) print $0, "PT:i:0"; else print $0, "PT:i:1"}') | samtools view -@ $cores -bS > $dir/fastqs/$Name.$Species.bam
+			    rm  $dir/fastqs/$Name.$Species.header.sam $dir/fastqs/$Name.$Species.Aligned.out.bam				
+			fi
+                        rm -r *_STARtmp *Log.progress.out *SJ.out.tab
 			mv $dir/fastqs/$Name.$Species.Log.final.out $dir/fastqs/$Name.$Species.align.log
 		    fi
 		else
@@ -368,15 +408,47 @@ for Name in ${Project[@]}; do
 			    echo "Skip converting bam to bed.gz"
 			else
                             echo "Convert namesort.bam to bed.gz & mark duplicates"
-			    bedtools bamtobed -i $Name.$Species.namesort.bam -bedpe | \
-				sed 's/_/\t/g' | \
-				awk -v OFS="\t" '{if($10=="+"){print $1,$2+4,$6-5,$8}else if($10=="-"){print $1,$2-5,$6+4,$8}}' |\
-				sort --parallel=$cores -S 40G  -k4,4 -k1,1 -k2,2n -k3,3n | \
-				uniq -c | \
-				awk -v OFS="\t" '{print $2, $3, $4, $5, $1}' | \
-				pigz --fast -p $cores > $Name.$Species.bed.gz
-			    rm $Name.$Species.namesort.bam
-			    ## when the DNA is taged twice, only use R2 for dedup..
+			    if [ ${oneread[$index]} == F ]; then
+				bedtools bamtobed -i $Name.$Species.namesort.bam -bedpe | \
+				    sed 's/_/\t/g' | \
+				    awk -v OFS="\t" '{if($10=="+"){print $1,$2+4,$6-5,$8}else if($10=="-"){print $1,$2-5,$6+4,$8}}' |\
+				    sort --parallel=$cores -S 40G  -k4,4 -k1,1 -k2,2n -k3,3n | \
+				    uniq -c | \
+				    awk -v OFS="\t" '{print $2, $3, $4, $5, $1}' | \
+				    pigz --fast -p $cores > $Name.$Species.bed.gz
+				rm $Name.$Species.namesort.bam
+				## when the DNA is taged twice, only use R2 for dedup..
+			    elif [ ${oneread[$index]} == "R2" ]; then
+				samtools view -f 0x80 -bS -@ $cores $Name.$Species.namesort.bam > $Name.$Species.namesort.R2.bam
+				bedtools bamtobed -i $Name.$Species.namesort.R2.bam | \
+				    sed 's/_/\t/g' | \
+				    sed 's/\/2//g' | \
+				    awk -v OFS="\t" '{if($7=="+"){print $1,$2+4,$2+54,$5}else if($7=="-"){print $1,$3-54,$3-5,$5}}' | \
+			            sort --parallel=$cores -S 40G  -k4,4 -k1,1 -k2,2n -k3,3n | \
+				    uniq -c | \
+				    awk -v OFS="\t" '{print $2, $3, $4, $5, $1}' | \
+			       	    pigz --fast -p $cores > $Name.$Species.bed.gz
+				rm $Name.$Species.bedpe $Name.$Species.sign.bed rm $Name.$Species.namesort.bam $Name.$Species.namesort.R2.bam
+			    elif [ ${oneread[$index]} == "Sh" ]; then
+	                        bedtools bamtobed -i $Name.$Species.namesort.bam -bedpe > $Name.$Species.bedpe
+				# negative sign indicates the first coordinate is from R2; + indicates the second is from R2
+				# only use 5' on R2 as unique location
+				bedtools bamtobed -i $Name.$Species.namesort.bam |  awk 'NR%2 == 1 {print $6}' > $Name.$Species.sign.bed
+				paste $Name.$Species.bedpe $Name.$Species.sign.bed | \
+                                    sed 's/_/\t/g' | \
+                                    sed 's/\/1//g' | \
+				    sed 's/\/2//g' | \
+				    awk -v OFS="\t" '{if($12=="-") print $1, $2+4, $6-5, $8, $6-$2; else print $1, $6-5, $2+4, $8, $6-$2}' | \
+				    sort --parallel=$cores -S 40G  -k4,4 -k1,1 -k2,2n | \
+				    awk -v OFS="\t" 'NR==1 { t1=$1;t2=$2;end=$3; bc=$4;insert=$5; sum=0} {if(t1==$1 && t2==$2 && bc==$4) {sum+=1; if(insert<$5) end=$3; insert=$6} else {print t1, t2, end, bc, sum; t1=$1;t2=$2;end=$3;sum=1;bc=$4; insert=$5}} END {print t1, t2, end, bc, sum}' | \
+				    awk -v OFS="\t" '{if($2>$3) print $1, $3, $2, $4, $5; else print}' | \
+                                    pigz --fast -p $cores > $Name.$Species.bed.gz
+				rm $Name.$Species.bedpe $Name.$Species.sign.bed $Name.$Species.namesort.bam
+				
+			    else
+				echo "Unkown option for deduplicating, exiting..."
+				exit
+			    fi
 			fi
 			# convert to a bam file for QC
                         bedToBam -i <(zcat $Name.$Species.bed.gz) -g $genomeBed/$Species.chrom.sizes | samtools sort -@ $cores -m 2G - > $Name.$Species.rmdup.bam
@@ -418,6 +490,7 @@ for Name in ${Project[@]}; do
 			    sort --parallel=$cores -S 40G -k1,1 -k2,2n -k3,3n -k4,4 | bgzip  > $Name.$Species.fragments.tsv.gz
 			tabix -p bed $Name.$Species.fragments.tsv.gz
 		    fi
+		    
 		fi
 		
 		# RNA processing
@@ -488,7 +561,7 @@ for Name in ${Project[@]}; do
 		# group UMIs
 		if [ ${Type[$index]} == "RNA" ]; then
 		    for Species2 in ${Genome2[@]}; do
-			if [ -f $dir/fastqs/$Name.$Species2.grouped.bam ] || [ -f $dir/fastqs/$Name.$Species2.groups.tsv.gz ] || [ -f $dir/fastqs/$Name.$Species2.groups.tsv ]; then
+			if [ -f $dir/fastqs/$Name.$Species2.grouped.bam ] || [ -f $dir/fastqs/$Name.$Species2.groups.tsv.gz ] || [ -f $dir/fastqs/$Name.$Species2.groups.tsv ] || [ -f $dir/fastqs/$Name.$Species2.groups.dT.tsv ] || [ -f $dir/fastqs/$Name.$Species2.groups.N6.tsv ]; then
 			    echo "Found $Name.$Species.groups.bam, skip grouping UMIs"
 			else
 			    echo "Group reads to unique UMIs"
@@ -499,19 +572,53 @@ for Name in ${Project[@]}; do
                                           -I $dir/fastqs/$Name.$Species2.wdup.bam \
                                           --output-bam -S $dir/fastqs/$Name.$Species2.grouped.bam \
                                           --group-out=$dir/fastqs/$Name.$Species2.groups.tsv --skip-tags-regex=Unassigned >>$dir/Run.log
+				
 			    else
 				## own UMI dedup by matching bc-umi-align position
-                                samtools view -@ $cores $Name.$Species2.wdup.bam | grep XT:Z: | \
-                                    sed 's/Unassigned_Ambiguity/discard/g' | \
-                                    sed 's/Unassigned_MappingQuality/discard/g' | \
-                                    awk 'gsub(/[_]/,"\t", $1)' | \
-                                    awk -v OFS='\t' '{if($NF ~/discard/){$NF=$(NF-1)} print $5, $6, $2, $3, $NF}' | \
-                                    sed 's/XT:Z://g' > $Name.$Species2.wdup.bed
-                                # remove dup reads
-                                python3 $myPATH/rm_dup_barcode_UMI_v3.py \
-                                        -i $Name.$Species2.wdup.bed -o $Name.$Species2.groups.tsv --m 1
-#                                pigz --fast -p $cores $dir/fastqs/$Name.$Species2.groups.tsv
-                                rm $Name.$Species2.wdup.bed
+				if [ ${N6[$index]} == "F" ]; then
+                                    samtools view -@ $cores $Name.$Species2.wdup.bam | grep XT:Z: | \
+					sed 's/Unassigned_Ambiguity/discard/g' | \
+					sed 's/Unassigned_MappingQuality/discard/g' | \
+					awk 'gsub(/[_]/,"\t", $1)' | \
+					awk -v OFS='\t' '{if($NF ~/discard/){$NF=$(NF-1)} print $5, $6, $2, $3, $NF}' | \
+					sed 's/XT:Z://g' > $Name.$Species2.wdup.bed
+                                    # remove dup reads
+                                    python3 $myPATH/rm_dup_barcode_UMI_v3.py \
+                                            -i $Name.$Species2.wdup.bed -o $Name.$Species2.groups.tsv --m 1
+                                    rm $Name.$Species2.wdup.bed
+				else
+				    ## group poly T reads by UMI and cutting position
+				    samtools view -@ $cores $Name.$Species2.wdup.bam | \
+					grep PT:i:1 | \
+					grep XT:Z: | \
+                                        sed 's/Unassigned_Ambiguity/discard/g' | \
+                                        sed 's/Unassigned_MappingQuality/discard/g' | \
+                                        awk 'gsub(/[_]/,"\t", $1)' | \
+                                        awk -v OFS='\t' '{if($NF ~/discard/){$NF=$(NF-1)} print $5, $6, $2, $3, $NF}' | \
+                                        sed 's/XT:Z://g' > $Name.$Species2.wdup.dT.bed
+
+				    # remove dup reads
+                                    python3 $myPATH/rm_dup_barcode_UMI_v3.py \
+                                            -i $Name.$Species2.wdup.dT.bed -o $Name.$Species2.groups.dT.tsv --m 1
+                                    rm $Name.$Species2.wdup.dT.bed
+
+				     ## group N6 reads by gene, barcode and cutting position
+                                    samtools view -@ $cores $Name.$Species2.wdup.bam | \
+					grep PT:i:0 | \
+					grep XT:Z: | \
+                                        sed 's/Unassigned_Ambiguity/discard/g' | \
+                                        sed 's/Unassigned_MappingQuality/discard/g' | \
+                                        awk 'gsub(/[_]/,"\t", $1)' | \
+                                        awk -v OFS='\t' '{if($NF ~/discard/){$NF=$(NF-1)} print $5"_"$6, $2, $NF}' | \
+                                        sed 's/XT:Z://g' > $Name.$Species2.wdup.N6.bed
+				    
+                                    # remove dup reads
+				    cat $Name.$Species2.wdup.N6.bed | \
+					sort --parallel=$cores -S 24G -k1,1 -k2,2 -k3,3 | \
+					uniq -c | \
+					awk -v OFS='\t' '{print $3, $4, $1, $2}' > $Name.$Species2.groups.N6.tsv
+				    rm $Name.$Species2.wdup.N6.bed
+				fi
 			    fi
 			fi
 			# convert groupped UMI to bed file
@@ -552,10 +659,19 @@ for Name in ${Project[@]}; do
 					## 1) umitools output keep all the barcode-UMI and don't collapse them
 					## 2) my script already collpsed them at alignment position level
 				else
-				    less $dir/fastqs/$Name.$Species2.groups.tsv | \
-					sort --parallel=$cores -S 24G -k1,1 -k2,2 | \
-					awk -v OFS="\t" 'NR==1 { t1=$1;t2=$2;readsum=0; umisum=0} {if(t1==$1 && t2==$2) {readsum+=$3; umisum+=1} else {print t1, t2, umisum, readsum; t1=$1;t2=$2;umisum=1;readsum=$3}} END {print t1, t2, umisum, readsum}' | \
-					pigz --fast -p $cores > $Name.$Species2.bed.gz
+				    if [ ${N6[$index]} == "F" ]; then
+					less $dir/fastqs/$Name.$Species2.groups.tsv | \
+					    sort --parallel=$cores -S 24G -k1,1 -k2,2 | \
+					    awk -v OFS="\t" 'NR==1 { t1=$1;t2=$2;readsum=0; umisum=0} {if(t1==$1 && t2==$2) {readsum+=$3; umisum+=1} else {print t1, t2, umisum, readsum; t1=$1;t2=$2;umisum=1;readsum=$3}} END {print t1, t2, umisum, readsum}' | \
+					    pigz --fast -p $cores > $Name.$Species2.bed.gz
+				    else
+					## count both dT and N6 UMIs
+					cat $dir/fastqs/$Name.$Species2.groups.dT.tsv $dir/fastqs/$Name.$Species2.groups.N6.tsv | \
+					    sort --parallel=$cores -S 24G -k1,1 -k2,2 | \
+                                            awk -v OFS="\t" 'NR==1 { t1=$1;t2=$2;readsum=0; umisum=0} {if(t1==$1 && t2==$2) {readsum+=$3; umisum+=1} else {print t1, t2, umisum, readsum; t1=$1;t2=$2;umisum=1;readsum=$3}} END {print t1, t2, umisum, readsum}' | \
+                                            pigz --fast -p $cores > $Name.$Species2.bed.gz
+					
+				    fi
 				fi
 			    fi
 			fi
@@ -632,6 +748,7 @@ for Name in ${Project[@]}; do
 			echo "Skip checking insert size"
 		    else
 			echo '' > $Name.$Species.rmdup.hist_data.log
+			java -jar $picardPATH CollectInsertSizeMetrics VALIDATION_STRINGENCY=SILENT I=$Name.$Species.st.bam O=$Name.$Species.rmdup.hist_data.log H=$Name.$Species.rmdup.hist_data.pdf W=1000  2>>$dir/Run.log
 		    fi
 		    if [ ! -f $Name.$Species.RefSeqTSS ]; then		
 			# make TSS pileup fig
@@ -643,14 +760,13 @@ for Name in ${Project[@]}; do
 	    fi
 	done
 	
-	for Species2 in ${Genome2[@]}; do
-	    if [ ${Type[$index]} == "RNA" ] || [ ${Type[$index]} == "crop" ] || [ ${Type[$index]} == "cite" ] || [ ${Type[$index]} == "cellhash" ]; then
+	for Species2 in ${Genome2[@]}; do		
+	    if [ ${Type[$index]} == "RNA" ]; then
 	  	# plot UMI/cell or gene/cell
 		echo "Convert bed to UMI count matrix, plot UMI_gene_perCell, generate h5"
 		/usr/local/bin/Rscript $myPATH/UMI_gene_perCell_plot_v3.R $dir/fastqs/ $Name.$Species2 --save
 	    fi
 	done
-
 
 	# estimate lib size
 	if [ -f $Name.counts.csv ]; then
@@ -687,8 +803,9 @@ done
 
 cd $dir
 # get stats for ATAC
+echo "get stats for ATAC"
 echo "Name" > Names.atac.xls
-index=0 && count=0
+index=0; count=0
 if [ -d $dir/temp/ ]; then rm -r $dir/temp/; fi
 mkdir $dir/temp/
 for Name in ${Project[@]}; do
@@ -714,6 +831,7 @@ for Name in ${Project[@]}; do
 	    cp $dir/$Name/$Name.$Species.stats.log $dir/temp/$Name.$Species/
 	    cp $dir/$Name/$Name.$Species.rmdup.hist_data.log $dir/temp/$Name.$Species/
 	    cp $dir/$Name/$Name.$Species.RefSeqTSS $dir/temp/$Name.$Species/
+	    let "count=count+1"
 	fi
     fi
     index=$((index + 1))
@@ -736,7 +854,7 @@ mkdir $dir/Useful
 cp $dir/*/*.png $dir/Useful
 cp $dir/*/*.pdf $dir/Useful
 
-# generate bigwig, for TAPS-seq and RNA-seq
+# generate bigwig, for RNA-seq
 let i=0 
 unset Subproject
 for (( Index=0; Index<${#Type[@]}; Index++ ))
@@ -773,16 +891,13 @@ rm -r $dir/temp/
 pigz --fast -p $cores $dir/*/*.csv
 pigz --fast -p $cores $dir/*/*.groups.tsv
 
-
 rm $dir/*/*wdup.all.bam* $dir/*/*namesort.bam $dir/igv.log $dir/*/*exon.featureCounts.bam 
 rm $dir/*/*grouped.bam $dir/*/*rigid.reheader.unique.st.bam*
 
 if [ $cleanup == "T" ]; then
-    rm $dir/fastqs/discard.R1.fastq.gz touch $dir/fastqs/discard.R1.fastq.gz
-    rm $dir/fastqs/discard.R2.fastq.gz touch $dir/fastqs/discard.R2.fastq.gz
-    $dir/*/*.groups.tsv.gz
+    rm $dir/*/*.groups.tsv.gz
 fi
 
-echo "The pipeline is completed!! Author: Sai Ma <sai@broadinstitute.org>"
+echo "The pipeline is completed!! Author: Sai Ma <sai.ma2@mssm.edu>"
 
 exit
