@@ -12,7 +12,7 @@ GGGCTACACAGAGAAACCCTGTCTCGAAAAACAAACAAAACAAAACAAAA\
 +SRR19912835.1 A01389:111:H2Y5KDMXY:1:1101:1127:1000_R1.003,R2.032,R3.081,P1.06 length=50\
 FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:
 
-Run these lines to modify the header and convert the format to be compatable with SHARE-seq pipeline. 
+Run these lines to modify the header and convert the format to be compatable with SHARE-seq pipeline. \
 cat SRR19912835_1.fastq | awk '{if(NR%4==1) print "@"$2; else if(NR%4==2) print; else if(NR%4==3) print "+"; else if(NR%4==3) print $0}' | bgzip > speciesmix.ATAC.R1.fastq.gz
 cat SRR19912835_2.fastq | awk '{if(NR%4==1) print "@"$2; else if(NR%4==2) print; else if(NR%4==3) print "+"; else if(NR%4==3) print $0}' | bgzip > speciesmix.ATAC.R2.fastq.gz
 
