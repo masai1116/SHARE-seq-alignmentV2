@@ -18,11 +18,10 @@ cat SRR19912835_2.fastq | awk '{if(NR%4==1) print "@"$2; else if(NR%4==2) print;
 
 The new read looks like:\
 zless speciesmix.ATAC.R1.fastq.gz | head -4
-@A01389:111:H2Y5KDMXY:1:1101:1127:1000_R1.003,R2.032,R3.081,P1.06
-GGGCTACACAGAGAAACCCTGTCTCGAAAAACAAACAAAACAAAACAAAA
-+
+@A01389:111:H2Y5KDMXY:1:1101:1127:1000_R1.003,R2.032,R3.081,P1.06\
+GGGCTACACAGAGAAACCCTGTCTCGAAAAACAAACAAAACAAAACAAAA\
++\
 @A01389:111:H2Y5KDMXY:1:1101:1832:1000_R1.083,R2.003,R3.037,P1.06
-
 
 3. Move the resulting fastq.gz files into a new directoy (/fakepath/fastqfoler/).
 
