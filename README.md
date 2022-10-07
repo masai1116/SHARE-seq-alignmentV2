@@ -104,7 +104,7 @@ A set of fastq files for human bone marrow cells experiment can be downloaded [h
 It only takes a few minutes to run the pipeline on the test data.
 More SHARE-seqV2 data will be released soon. 
 
-# reprocess deposited fastqs 
+# Reprocess deposited fastqs 
 Please follow the tutorial [here](https://github.com/masai1116/SHARE-seq-alignmentV2/blob/main/reprocess_deposited_data.md). 
 
 # Cite us
