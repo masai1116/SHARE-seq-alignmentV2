@@ -11,7 +11,7 @@ Note: The fastq and output files are reformated and different from V1 pipeline.\
 **Author: Sai Ma. masai.zju@gmail.com**
 
 # Important note
-The ATAC and RNA barcodes would in the format of R1.xxx,R2.xxx,R3.xxx,P1.yy, where xxx is in the range of 01-192, yy is in the range of 01-96.\
+The ATAC and RNA barcodes would in the format of R1.xxx,R2.xxx,R3.xxx,P1.yy, where xxx is in the range of 01-192, yy is in the range of 01-92.\
 The P1.xx indicates the primers that were used to amplify each ATAC and RNA sub-libraries. It is expected to be different between RNA and ATAC assay. The rest part of barcode (R1.xxx,R2.xxx,R3.xxx) would be the same for ATAC and RNA library.\
 Depending on the downstream analysis pipeline, sometimes the comma in the barcode would be converted to period (R1.xxx,R2.xxx,R3.xxx,P1.yy --> R1.xxx.R2.xxx.R3.xxx.P1.yy).\
 A barcode translation table indicating the P1.xx used in the assay would be beneficial, when submitting data to GEO.
