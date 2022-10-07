@@ -36,7 +36,8 @@ Assuming SHARE-seq aligment scripts are installed to "/home/SHARE-seq-alignment/
 If user prefer to use their own genome build, the bowtie2 index files should be placed in the "/home/SHARE-seq-alignment/refGenome/bowtie2/" folder.\
 Four sets of index files (hg38, hg19, mm10 and hg19-mm10 combined genome) for star aligner should be prepared according to star aligner [manual](https://github.com/alexdobin/STAR), or downloded from here: [hg19](https://drive.google.com/file/d/1IXI4DP-mjh2qc-EQe1WnWJQOCVEI4KVX/view?usp=sharing), [mm10](https://drive.google.com/file/d/1n0UwzOeUbX7TIBOrcBbXjgH3i0UH-Ka5/view?usp=sharing), [combined genome](https://drive.google.com/file/d/15Z2YMUDiavYG0s9zLFAbbwqA0VhVNu-f/view?usp=sharing).\
 The unziped index files should be placed in the "/home/SHARE-seq-alignment/refGenome/star/hg38", "/home/SHARE-seq-alignment/refGenome/star/hg19", "/home/SHARE-seq-alignment/refGenome/star/mm10", and "/home/SHARE-seq-alignment/refGenome/star/both", respectively.\
-The index file for hg19-mm10 combined genome can be downloaded from [10x Genomics website](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest).
+The index file for hg19-mm10 combined genome can be downloaded from [10x Genomics website](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest).\
+A set of example fastqs can be downloaded from [here](https://drive.google.com/drive/folders/1d0gfb7qrBL76MMh0JPRX3z9-1Wqxt0vd?usp=sharing)
 
 # How to run the script?
 A small set of fastq files for testing are in the test_fastq_nova/ folder
@@ -44,7 +45,7 @@ Before running, three sections in the main script "Split_seq_example.sh" need to
 A) paths B) sample configuration C) fastq configuration. After update all specific information in Share_seqV2_example.sh and config.example.yaml, run the script by ```./Share_seqV2_example.sh```
 ## A) paths
 1) rawdir=./example_fastq/ # where the raw data is
-2) dir=./test/ # where output data will be stored; ./example_output/ shows the output from the example fastqs 
+2) dir=./test/ # where output data will be stored
 3) yaml=./config_example.ymal # where the ymal configuration file is
 
 ## B) sample configuration
