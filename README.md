@@ -103,7 +103,7 @@ This pipeline currently keeps many intermedia files. If preferred, they can be m
 # Read data example
 A set of fastq files for human bone marrow cells experiment can be downloaded [here](https://drive.google.com/drive/folders/1d0gfb7qrBL76MMh0JPRX3z9-1Wqxt0vd?usp=sharing). 
 It only takes a few minutes to run the pipeline on the test data.
-More SHARE-seqV2 data will be released soon. 
+More SHARE-seqV2 data is available [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE207308). 
 
 # Reprocess deposited fastqs 
 Please follow the tutorial [here](https://github.com/masai1116/SHARE-seq-alignmentV2/blob/main/reprocess_deposited_data.md). 
