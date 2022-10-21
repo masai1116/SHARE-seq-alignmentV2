@@ -17,7 +17,7 @@ Depending on the downstream analysis pipeline, sometimes the comma in the barcod
 A barcode translation table indicating the P1.xx used in the assay would be beneficial, when submitting data to GEO.
 
 # Installation
-This pipeline requires following packages to be properly installed and added to system path: GNU parallel, Bcl2fastq, fastp, zcat, STAR, bowtie2, python3 (all python code upadted to python3), umi_tools, samtools, picard (2.14.1, newer version may result in error), R, featureCounts, read_distribution.py from RSeQC, bedtools. 
+This pipeline requires following packages to be properly installed and added to system path: GNU parallel, Bcl2fastq, fastp, zcat, STAR(2.5.2b), bowtie2, python3 (all python code upadted to python3), umi_tools, samtools, picard (2.14.1, newer version may result in error), R, featureCounts, read_distribution.py from RSeQC, bedtools, and bgzip. 
 
 The SHARE-seq-alignment scripts can be directly downloaded from the github website.\
 [https://github.com/masai1116/SHARE-seq-alignmentV2/](https://github.com/masai1116/SHARE-seq-alignmentV2/)
