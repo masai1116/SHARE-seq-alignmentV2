@@ -45,7 +45,7 @@ if (length(unique(linear$V1)) < 20000){
       for (i in 1:nrow(window)){
       	  print(window[i, ])
       	  sub <- linear %>% filter(V1 %in% cells[window[i,1]:window[i,2]])
-      	  Mx.sub <- as(acast(sub, V2~V1, value.var="V3", fill=0), "sparseMatrix")
+      	  Mx.sub <- as(acast(sub, V2~V1, value.var="V3", fill=0, fun.aggregate = mean), "sparseMatrix")
       	  emptygenes <- genes[!genes %in% rownames(Mx.sub)]
       	  emptyMx <- as(matrix(data = 0, ncol = ncol(Mx.sub), nrow = length(emptygenes)), "sparseMatrix")
       	  colnames(emptyMx) <- colnames(Mx.sub)
@@ -58,7 +58,7 @@ if (length(unique(linear$V1)) < 20000){
       	   }
    	}
      } else {
-     Df2 <- as(acast(linear, V2~V1, value.var="V3", fill=0), "sparseMatrix")
+     Df2 <- as(acast(linear, V2~V1, value.var="V3", fill=0, fun.aggregate = mean), "sparseMatrix")
   }
 }
 print(paste("No. genes x cells = ", nrow(Df2), "x", ncol(Df2), sep=""))
