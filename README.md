@@ -5,7 +5,7 @@
 </html>
 
 # SHARE-seq-alignmentV2
-Pipeline for demultiplexing and aligning both ATAC and RNA data generated in SHARE-seqV2.\
+Pipeline for demultiplexing and aligning both ATAC and RNA data generated in SHARE-seq.\
 The V2 pipeline is much faster than previous version and less demanding. \
 Note: The fastq and output files are reformated and different from V1 pipeline.\
 **Author: Sai Ma. masai.zju@gmail.com**
@@ -42,7 +42,7 @@ A set of example fastqs can be downloaded from [here](https://drive.google.com/d
 # How to run the script?
 A small set of fastq files for testing are in the test_fastq_nova/ folder
 Before running, three sections in the main script "Split_seq_example.sh" need to be updated for each run, inlcuding 
-A) paths B) sample configuration C) fastq configuration. After update all specific information in Share_seqV2_example.sh and config.example.yaml, run the script by ```./Share_seqV2_example.sh```
+A) paths B) sample configuration C) fastq configuration. After update all specific information in Share_seq_example.sh and config.example.yaml, run the script by ```./Share_seqV2_example.sh```
 ## A) paths
 1) rawdir=./example_fastq/ # where the raw data is
 2) dir=./test/ # where output data will be stored
@@ -103,7 +103,7 @@ This pipeline currently keeps many intermedia files. If preferred, they can be m
 # Read data example
 A set of fastq files for human bone marrow cells experiment can be downloaded [here](https://drive.google.com/drive/folders/1d0gfb7qrBL76MMh0JPRX3z9-1Wqxt0vd?usp=sharing). 
 It only takes a few minutes to run the pipeline on the test data.
-More SHARE-seqV2 data is available [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE207308). 
+More SHARE-seq data is available [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE207308). 
 
 # Reprocess deposited fastqs 
 Please follow the tutorial [here](https://github.com/masai1116/SHARE-seq-alignmentV2/blob/main/reprocess_deposited_data.md). 
